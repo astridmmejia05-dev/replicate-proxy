@@ -9,12 +9,12 @@ export default async function handler(req, res) {
   const { url, body } = req.body;
 
   const response = await fetch(url, {
-    method: 'POST',
+    method: body ? 'POST' : 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(body)
+    ...(body && { body: JSON.stringify(body) })
   });
 
   const data = await response.json();
