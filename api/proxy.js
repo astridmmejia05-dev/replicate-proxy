@@ -5,13 +5,20 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const token = process.env.REPLICATE_API_TOKEN;
-  const { url, body } = req.body;
+  const { url, body, service } = req.body;
+  
+  const token = service === 'fal' 
+    ? process.env.FAL_API_KEY 
+    : process.env.REPLICATE_API_TOKEN;
+
+  const authHeader = service === 'fal'
+    ? `Key ${token}`
+    : `Bearer ${token}`;
 
   const response = await fetch(url, {
     method: body ? 'POST' : 'GET',
     headers: {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': authHeader,
       'Content-Type': 'application/json'
     },
     ...(body && { body: JSON.stringify(body) })
